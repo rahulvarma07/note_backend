@@ -16,7 +16,7 @@ type Storage struct {
 
 type HttpServer struct {
 	Host    string `yaml:"host" env_required:"true"`
-	Port    int    `yaml:"port" env_required:"true"`
+	Port    string    `yaml:"port" env_required:"true"`
 	BaseUrl string `yaml:"baseUrl" env_required:"true"`
 }
 
