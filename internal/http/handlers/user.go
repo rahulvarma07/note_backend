@@ -42,7 +42,7 @@ func CreateUser(successMail *config.Mail) http.HandlerFunc {
 		// now if there is no error 
 		// generate a mail to the user
 
-		mail.SendMail(successMail, userModel.Email)
+		mail.SendMail(successMail, &userModel)
 
 		utils.SetResponse(w, http.StatusCreated, map[string]string{"message" : "created"})
 	}

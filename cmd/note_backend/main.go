@@ -21,21 +21,21 @@ func main() {
 	router := mux.NewRouter()
 
 	router.HandleFunc("/create-a-user", handlers.CreateUser(&cnf.Mail)).Methods("POST")
+	router.HandleFunc("/mail-verification", handlers.AuthenticateUser()).Methods("GET")
 
 	server := &http.Server{
 		Addr: cnf.HttpServer.BaseUrl,
 		Handler: router,
 	}
 
-	log.Println("started the server")
-
 	stop := make(chan os.Signal, 1)
 	signal.Notify(stop, os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
-	go func(){
-		slog.Info("server has started at", slog.String("port number: ", cnf.HttpServer.Port))
+
+	go func() {
+		slog.Info("Server has started", slog.String("port", cnf.HttpServer.Port))
 		err := http.ListenAndServe(cnf.HttpServer.Port, router)
-		if err != nil{
-			log.Fatal("error in starting the server", err)
+		if err != nil {
+			log.Fatal("Error starting server: ", err)
 		}
 	}()
 	<-stop
