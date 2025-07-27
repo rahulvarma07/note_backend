@@ -1,8 +1,6 @@
 package main
 
 import (
-	"fmt"
-
 	"github.com/rahulvarma07/note_backend/internal/config"
 )
 
