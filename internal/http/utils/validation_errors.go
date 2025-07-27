@@ -21,6 +21,7 @@ func CheckValidations(err validator.ValidationErrors) SetResponseModel {
 			valiadtionError = append(valiadtionError, fmt.Sprintf("the field %s is required", err.Field()))
 		}
 	}
+	
 	return SetResponseModel{
 		Status: statusFailure,
 		Message: strings.Join(valiadtionError, ","),

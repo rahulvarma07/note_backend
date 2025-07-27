@@ -23,6 +23,8 @@ type HttpServer struct {
 type Mail struct {
 	MailPort     int    `yaml:"mailPort" env_required:"true"`
 	SenderMailID string `yaml:"mailID" env_required:"true"`
+	MailHost     string `yaml:"mailHost" env_required:"true"`
+	MailPassword string `yaml:"mailPassword" env_required:"true"`
 }
 
 type Config struct {
@@ -32,7 +34,7 @@ type Config struct {
 	Mail       `yaml:"mail_attributes" env_required:"true"`
 }
 
-func MustLoad() *Config{
+func MustLoad() *Config {
 
 	// Steps
 	// load the env file
@@ -53,10 +55,10 @@ func MustLoad() *Config{
 		log.Fatalf("the file path does not exsist %s", yaml_path)
 	}
 
-	var cnf Config;
+	var cnf Config
 	err = cleanenv.ReadConfig(yaml_path, &cnf)
 
-	if err != nil{
+	if err != nil {
 		log.Fatalf("failed to load yaml path %s", err)
 	}
 
