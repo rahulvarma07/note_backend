@@ -7,11 +7,13 @@ import (
 	"net/http"
 
 	"github.com/go-playground/validator/v10"
+	"github.com/rahulvarma07/note_backend/internal/config"
+	"github.com/rahulvarma07/note_backend/internal/http/mail"
 	"github.com/rahulvarma07/note_backend/internal/http/models"
 	"github.com/rahulvarma07/note_backend/internal/http/utils"
 )
 
-func CreateUser() http.HandlerFunc {
+func CreateUser(successMail *config.Mail) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		defer r.Body.Close()
 
@@ -39,11 +41,10 @@ func CreateUser() http.HandlerFunc {
 
 		// now if there is no error 
 		// generate a mail to the user
-		
 
+		mail.SendMail(successMail, userModel.Email)
+
+		utils.SetResponse(w, http.StatusCreated, map[string]string{"message" : "created"})
 	}
 }
 
-func SendVerificationMail() {
-
-}

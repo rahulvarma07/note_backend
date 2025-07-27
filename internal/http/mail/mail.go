@@ -17,8 +17,8 @@ func SendMail(mailConfig *config.Mail, userEmail string) {
 	mailPort := mailConfig.MailPort         // 587
 	mailPassword := mailConfig.MailPassword // mail app password
 
-	htmlBody := 
-	`<html>
+	htmlBody :=
+		`<html>
 		<body style="font-family: Arial, sans-serif; line-height: 1.6;">
 			<h2>Verify Your Email Address</h2>
 			<p>Hello,</p>
@@ -44,12 +44,12 @@ func SendMail(mailConfig *config.Mail, userEmail string) {
 	mailer.SetHeader("From", from)
 	mailer.SetHeader("To", to)
 	mailer.SetHeader("Subject", "Verify Your Email")
-	mailer.SetBody("text/Html", htmlBody)
+	mailer.SetBody("text/html", htmlBody)
 
 	dialer := gomail.NewDialer(mailHost, mailPort, from, mailPassword)
 
-	if err := dialer.DialAndSend(); err != nil{
-		log.Fatal("unable to send the verifiaction mail")
+	if err := dialer.DialAndSend(mailer); err != nil {
+		log.Fatal("unable to send the verifiaction mail", err)
 	}
 
 	log.Println("Successfully send the verification mail")
