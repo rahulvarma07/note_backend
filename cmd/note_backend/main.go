@@ -12,19 +12,23 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/rahulvarma07/note_backend/internal/config"
+	"github.com/rahulvarma07/note_backend/internal/http/database"
 	"github.com/rahulvarma07/note_backend/internal/http/handlers"
+	"go.mongodb.org/mongo-driver/v2/mongo"
 )
 
 func main() {
 	var cnf config.Config = *config.MustLoad()
-
 	router := mux.NewRouter()
 
-	router.HandleFunc("/create-a-user", handlers.CreateUser(&cnf.Mail)).Methods("POST")
-	router.HandleFunc("/mail-verification", handlers.AuthenticateUser()).Methods("GET")
+	var MongoClient *mongo.Client = database.MustGetMongoClient()
+	var UserMongoCollection *mongo.Collection = database.CreateMongCollection(MongoClient, "userCollection", "credentials")
+
+	router.HandleFunc("/create-a-user", handlers.SendVerificationMail(&cnf.Mail)).Methods("POST")
+	router.HandleFunc("/mail-verification", handlers.SignUpUser(UserMongoCollection)).Methods("GET")
 
 	server := &http.Server{
-		Addr: cnf.HttpServer.BaseUrl,
+		Addr:    cnf.HttpServer.BaseUrl,
 		Handler: router,
 	}
 
@@ -40,7 +44,7 @@ func main() {
 	}()
 	<-stop
 
-	con, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	con, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
 	err := server.Shutdown(con)

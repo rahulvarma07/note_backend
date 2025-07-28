@@ -13,7 +13,7 @@ import (
 	"github.com/rahulvarma07/note_backend/internal/http/utils"
 )
 
-func CreateUser(successMail *config.Mail) http.HandlerFunc {
+func SendVerificationMail(successMail *config.Mail) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		defer r.Body.Close()
 
@@ -42,9 +42,10 @@ func CreateUser(successMail *config.Mail) http.HandlerFunc {
 		// now if there is no error 
 		// generate a mail to the user
 
-		mail.SendMail(successMail, &userModel)
-
-		utils.SetResponse(w, http.StatusCreated, map[string]string{"message" : "created"})
+		go mail.SendMail(successMail, &userModel)
+		
+		utils.SetResponse(w, http.StatusCreated, map[string]string{"message" : "verify email and login"})
+		
 	}
 }
 
