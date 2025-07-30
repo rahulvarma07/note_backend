@@ -29,3 +29,10 @@ func GeneralErrors(err error) SetResponseModel {
 	}
 }
 
+func CustomError(customMessage string) SetResponseModel{
+	return SetResponseModel{
+		Status: statusFailure,
+		Message: customMessage,
+	}
+}
+

@@ -11,10 +11,13 @@ import (
 	"github.com/rahulvarma07/note_backend/internal/http/mail"
 	"github.com/rahulvarma07/note_backend/internal/http/models"
 	"github.com/rahulvarma07/note_backend/internal/http/utils"
+	"go.mongodb.org/mongo-driver/v2/mongo"
 )
 
-func SendVerificationMail(successMail *config.Mail) http.HandlerFunc {
+func SendVerificationMail(successMail *config.Mail, userAuthCOllection *mongo.Collection) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		// con, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+		// defer cancel()
 		defer r.Body.Close()
 
 		var userModel models.UserSignUp
@@ -39,13 +42,11 @@ func SendVerificationMail(successMail *config.Mail) http.HandlerFunc {
 			return
 		}
 
-		// now if there is no error 
-		// generate a mail to the user
+		// check whether the user is present or not already in the DB
+		// findTheUSer := bson.M{"email" : userModel.Email}
+		// foundTheUser := userAuthCOllection.FindOne(con, findTheUSer)
 
 		go mail.SendMail(successMail, &userModel)
-		
-		utils.SetResponse(w, http.StatusCreated, map[string]string{"message" : "verify email and login"})
-		
+		utils.SetResponse(w, http.StatusCreated, map[string]string{"message": "verify email and login"})
 	}
 }
-
