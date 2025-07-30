@@ -29,9 +29,6 @@ func SignUpUser(userAuthCollection *mongo.Collection) http.HandlerFunc {
 			log.Println("unable to get the token information", err)
 		}
 
-		// hash the password,
-		userPassword := tokenInfo.Password
-		hashPassword, err := utils.HashPassword(userPassword)
 		if err != nil {
 			log.Println("Unable to hash the user password")
 		}
@@ -42,7 +39,7 @@ func SignUpUser(userAuthCollection *mongo.Collection) http.HandlerFunc {
 		storeUserModel.UserId = uniqueID
 		storeUserModel.UserName = tokenInfo.Name
 		storeUserModel.UserEmail = tokenInfo.Email
-		storeUserModel.UserPassword = hashPassword
+		storeUserModel.UserPassword = tokenInfo.Password
 
 		_, dbErr := userAuthCollection.InsertOne(ctx, storeUserModel)
 		if dbErr != nil {

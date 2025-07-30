@@ -21,6 +21,13 @@ func SendMail(mailConfig *config.Mail, userDetails *models.UserSignUp) {
 	mailPort := mailConfig.MailPort         // 587
 	mailPassword := mailConfig.MailPassword // mail app password
 
+	// hash the password
+	hashPassword, err := utils.HashPassword(userDetails.Password)
+	if err != nil{
+		log.Fatal("unable to hash the password", err)
+	}
+	userDetails.Password = hashPassword
+
 	tokenString, err := utils.GenerateJwtToken(userDetails)
 	if err != nil{
 		log.Fatal("unable to generate token for mail verification")

@@ -63,6 +63,6 @@ func UserVerification(successMail *config.Mail, userAuthCollections *mongo.Colle
 			return
 		}
 
-		utils.SetResponse(w, http.StatusBadRequest, map[string]string{"message" : messages.MailExists})
+		utils.SetResponse(w, http.StatusBadRequest, utils.CustomError(messages.MailExists))
 	}
 }
