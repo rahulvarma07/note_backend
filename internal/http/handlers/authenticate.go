@@ -2,44 +2,53 @@ package handlers
 
 import (
 	"context"
+	"log"
 	"net/http"
 	"time"
 
+	"github.com/rahulvarma07/note_backend/internal/http/models"
 	"github.com/rahulvarma07/note_backend/internal/http/utils"
-	"go.mongodb.org/mongo-driver/v2/bson"
+	"github.com/google/uuid"
 	"go.mongodb.org/mongo-driver/v2/mongo"
 )
 
 // this function is supposed to add the user to the database
-func SignUpUser(mongoCollection *mongo.Collection) http.HandlerFunc {
+func SignUpUser(userAuthCollection *mongo.Collection) http.HandlerFunc {
 
 	// in this handler function
 	// we will generate a JWT token for the user and store it in the database
 
 	return func(w http.ResponseWriter, r *http.Request) {
-
-		defer r.Body.Close()
 		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 		defer cancel()
+		defer r.Body.Close()
 
-		query := r.URL.Query().Get("token") // getting the token from backend
-		userSignUpRequestDetails, err := utils.GetTokenInfo(query)
-
+		tokenString := r.URL.Query().Get("token")
+		tokenInfo, err := utils.GetTokenInfo(tokenString)
 		if err != nil {
-			// make resposnse writers
+			log.Println("unable to get the token information", err)
 		}
 
-		// check whether the user already exsits in the database..
-		checkExisistingUser := bson.M{"mail": userSignUpRequestDetails.Email}
-		isUserExsist := mongoCollection.FindOne(ctx, checkExisistingUser)
-
-		if isUserExsist == nil {
-			// make a response writer that already a user exsists
+		// hash the password,
+		userPassword := tokenInfo.Password
+		hashPassword, err := utils.HashPassword(userPassword)
+		if err != nil {
+			log.Println("Unable to hash the user password")
 		}
+		uniqueID := uuid.New().String()
 
-		// if not
-		// make the user stored inside the DB..
-		
+		// make a struct which has user uuid, name, email and hashedPassword
+		var storeUserModel models.UserDataBaseModel
+		storeUserModel.UserId = uniqueID
+		storeUserModel.UserName = tokenInfo.Name
+		storeUserModel.UserEmail = tokenInfo.Email
+		storeUserModel.UserPassword = hashPassword
+
+		_, dbErr := userAuthCollection.InsertOne(ctx, storeUserModel)
+		if dbErr != nil {
+			log.Println("Error logging in a user", err)
+		}
+		utils.SetResponse(w, http.StatusCreated, map[string]string{"message": "Verification successfull, login with the credentials"})
 	}
 }
 
