@@ -28,7 +28,7 @@ func SendMail(mailConfig *config.Mail, userDetails *models.UserSignUp) {
 	}
 	userDetails.Password = hashPassword
 
-	tokenString, err := utils.GenerateJwtToken(userDetails)
+	tokenString, err := utils.MailToken(userDetails)
 	if err != nil{
 		log.Fatal("unable to generate token for mail verification")
 	}

@@ -24,8 +24,9 @@ func main() {
 	var MongoClient *mongo.Client = database.MustGetMongoClient()
 	var UserMongoCollection *mongo.Collection = database.CreateMongCollection(MongoClient, "userCollection", "credentials")
 
-	router.HandleFunc("/create-a-user", handlers.UserVerification(&cnf.Mail, UserMongoCollection)).Methods("POST")
-	router.HandleFunc("/mail-verification", handlers.SignUpUser(UserMongoCollection)).Methods("GET")
+	router.HandleFunc("/note/signup", handlers.UserVerification(&cnf.Mail, UserMongoCollection)).Methods("POST")
+	router.HandleFunc("/note/mail-verification", handlers.SignUpUser(UserMongoCollection)).Methods("GET")
+	router.HandleFunc("/note/login", handlers.LoginTheUser(UserMongoCollection)).Methods("POST")
 
 	server := &http.Server{
 		Addr:    cnf.HttpServer.BaseUrl,

@@ -9,7 +9,8 @@ import (
 
 var secretKey = []byte(os.Getenv("JWT_SECRET"))
 
-func GenerateJwtToken(user *models.UserSignUp) (string, error) {
+// this function is generate token for mail
+func MailToken(user *models.UserSignUp) (string, error) {
 	claims := jwt.MapClaims{
 		"name":     user.Name,
 		"email":    user.Email,
@@ -25,6 +26,22 @@ func GenerateJwtToken(user *models.UserSignUp) (string, error) {
 	return tokenString, nil
 }
 
+// this function is to generate the login token
+func UserAuthToken(user *models.UserDataBaseModel) (string, error) {
+	claims := jwt.MapClaims{
+		"user_id":       user.UserId,
+		"user_name":     user.UserName,
+		"user_email":    user.UserEmail,
+		"user_password": user.UserPassword,
+	}
+	tokenString := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	token, err := tokenString.SignedString(secretKey)
+	if err != nil {
+		return "", err
+	}
+	return token, err
+}
+
 // this function is to parse the JWT token..
 func GetTokenInfo(token string) (*models.UserSignUp, error) {
 
@@ -35,13 +52,13 @@ func GetTokenInfo(token string) (*models.UserSignUp, error) {
 		return []byte(secretKey), nil
 	})
 
-	if err != nil || !tokenString.Valid{
+	if err != nil || !tokenString.Valid {
 		return nil, err
 	}
 
 	return &models.UserSignUp{
-		Name: claims["name"].(string),
-		Email: claims["email"].(string),
+		Name:     claims["name"].(string),
+		Email:    claims["email"].(string),
 		Password: claims["password"].(string),
 	}, nil
 }
