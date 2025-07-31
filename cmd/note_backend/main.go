@@ -22,11 +22,13 @@ func main() {
 	router := mux.NewRouter()
 
 	var MongoClient *mongo.Client = database.MustGetMongoClient()
-	var UserMongoCollection *mongo.Collection = database.CreateMongCollection(MongoClient, "userCollection", "credentials")
+	var UserAuthMongoCollection *mongo.Collection = database.CreateMongCollection(MongoClient, "userCollection", "credentials")
+	var UserNoteMongoCollection *mongo.Collection = database.CreateMongCollection(MongoClient, "notesCollection", "userNotes")
 
-	router.HandleFunc("/note/signup", handlers.UserVerification(&cnf.Mail, UserMongoCollection)).Methods("POST")
-	router.HandleFunc("/note/mail-verification", handlers.SignUpUser(UserMongoCollection)).Methods("GET")
-	router.HandleFunc("/note/login", handlers.LoginTheUser(UserMongoCollection)).Methods("POST")
+	router.HandleFunc("/note/signup", handlers.UserVerification(&cnf.Mail, UserAuthMongoCollection)).Methods("POST")
+	router.HandleFunc("/note/mail-verification", handlers.SignUpUser(UserAuthMongoCollection)).Methods("GET")
+	router.HandleFunc("/note/login", handlers.LoginTheUser(UserAuthMongoCollection)).Methods("POST")
+	router.HandleFunc("/note/add-note", handlers.AddNotes(UserNoteMongoCollection)).Methods("POST")
 
 	server := &http.Server{
 		Addr:    cnf.HttpServer.BaseUrl,
