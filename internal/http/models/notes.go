@@ -4,6 +4,7 @@ import "time"
 
 type UserNotesDataBase struct {
 	UserId      string    `json:"user_id" bson:"user_id"`
+	NoteId      string    `json:"note_id" bson:"note_id"`
 	Title       string    `json:"title" bson:"title"`
 	Tag         string    `json:"tag" bson:"tag"`
 	Notes       string    `json:"note" bson:"note"`
@@ -16,4 +17,13 @@ type UserNotesRequest struct {
 	Title  string `validate:"required" json:"title" bson:"title"`
 	Tag    string `validate:"required" json:"tag" bson:"tag"`
 	Notes  string `validate:"required" json:"note" bson:"note"`
+}
+
+type UsertNotesRequestById struct {
+	Id string `validate:"required" json:"id"`
+}
+
+type UserNotesRequestByTag struct{
+	Id string `validate:"required" json:"id"`
+	Tag string `validate:"required" json:"tag"`
 }

@@ -29,6 +29,9 @@ func main() {
 	router.HandleFunc("/note/mail-verification", handlers.SignUpUser(UserAuthMongoCollection)).Methods("GET")
 	router.HandleFunc("/note/login", handlers.LoginTheUser(UserAuthMongoCollection)).Methods("POST")
 	router.HandleFunc("/note/add-note", handlers.AddNotes(UserNoteMongoCollection)).Methods("POST")
+	router.HandleFunc("/note/delete-note", handlers.DeletUserNote(UserNoteMongoCollection)).Methods("POST")
+	router.HandleFunc("/note/get-notes", handlers.GetAllNotes(UserNoteMongoCollection)).Methods("POST")
+	router.HandleFunc("/note/get-notes-by-tags", handlers.GetNotesByTags(UserNoteMongoCollection)).Methods("POST")
 
 	server := &http.Server{
 		Addr:    cnf.HttpServer.BaseUrl,
